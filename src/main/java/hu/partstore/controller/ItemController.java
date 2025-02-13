@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,37 +25,39 @@ import java.util.List;
 public class ItemController {
 
 	@Autowired
-	private ItemService storeService;
-	/*
-	@PostMapping("/user/login")
-	public ResponseEntity<AppUserDto> loginUser(AppUserDto userDto) {
-        /*return new ResponseEntity<>(
-                storeService.authenticateUser(userDto),
-                HttpStatus.OK);*/
-		/*return new ResponseEntity<>(HttpStatus.OK);
-	}
-
-	@PostMapping("/user/regist")
-	public AppUserDto registerUser(AppUserDto userDto) {
-		return storeService.registerUser(userDto);
-	}*/
+	private ItemService itemService;
 
 	@GetMapping("/supplier/list")
 	public ResponseEntity<List<SupplierDto>> listSuppliers() {
-		return new ResponseEntity<>(storeService.listSuppliers(), HttpStatus.OK);
+		return new ResponseEntity<>(itemService.listSuppliers(), HttpStatus.OK);
 	}
 
-	//Create – Létrehozás, Read – Listázás, Update – Módosítás,
-	//Delete – Törlés
-	@PostMapping("/parts/list")
+	@GetMapping("/item/{id}")
+	public ResponseEntity<ItemDto> getItem(@PathVariable("id") String itemId) {
+		return new ResponseEntity<>(itemService.getItem(Long.valueOf(itemId)), HttpStatus.OK);
+	}
+	
+	@PostMapping("/item/list")
 	public ResponseEntity<List<ItemDto>> searchParts(@RequestBody ItemSearchDto searchDto) {
-		return new ResponseEntity<>(storeService.searchParts(searchDto), HttpStatus.OK);
+		return new ResponseEntity<>(itemService.searchParts(searchDto), HttpStatus.OK);
 	}
 
-	@PostMapping("/parts/create")
+	@PostMapping("/item/create")
 	public ResponseEntity<ItemDto> createPart(@RequestBody ItemDto partDto) {
-		return new ResponseEntity<>(storeService.createPart(partDto), HttpStatus.OK);
+		return new ResponseEntity<>(itemService.createOrModifyPart(partDto), HttpStatus.OK);
 	}
+
+	@PutMapping("/item/modify")
+	public ResponseEntity<ItemDto> modifyPart(@RequestBody ItemDto itemDto) {
+		return new ResponseEntity<>(itemService.createOrModifyPart(itemDto), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/item/delete/{id}")
+	public ResponseEntity deletePart(@PathVariable("id") Long itemId) {
+		itemService.deletePart(itemId);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
 
 
 

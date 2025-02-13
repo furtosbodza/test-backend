@@ -5,13 +5,17 @@ import hu.partstore.model.dto.SupplierDto;
 import hu.partstore.model.entity.Item;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ItemMapper {
 
-	Item toParts(ItemDto partDto);
+
+	Item updateItem(ItemDto itemDto, @MappingTarget Item item);
+
+	Item toParts(ItemDto itemDto);
 
 	ItemDto toPartsDto(Item part);
 

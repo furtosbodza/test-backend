@@ -11,13 +11,13 @@ import java.util.List;
 public interface ItemRepository
 	extends JpaRepository<Item, Long> {
 
-	@Query("SELECT part FROM Item part order by part.name ")
-	List<Item> findAllParts();
+	@Query("SELECT item FROM Item item order by item.name ")
+	List<Item> findAllOrderByNameAsc();
 
-	//@Query("SELECT part FROM Item part order by part.name ")
-	List<Item> findAllPartsByName(String name);
+	@Query("SELECT item FROM Item item WHERE item.name LIKE %:name% order by item.name ")
+	List<Item> findAllByNameOrderByNameAsc(String name);
 
-	//@Query("SELECT part FROM Item part order by part.name ")
+	//@Query("SELECT item FROM Item item order by item.name ")
 	List<Item> findAllPartsBySupplier(String supplier);
 
 	List<Item> findAllPartsByNameAndSupplier(String name, String supplier);

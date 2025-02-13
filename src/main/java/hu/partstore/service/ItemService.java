@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -30,9 +31,9 @@ public class ItemService {
 	public List<ItemDto> searchParts(ItemSearchDto searchDto) {
 		List<Item> resultList;
 		if (StringUtils.isBlank(searchDto.name()) && StringUtils.isBlank(searchDto.supplier())) {
-			resultList = partsRepository.findAllParts();
+			resultList = partsRepository.findAllOrderByNameAsc();
 		} else if (StringUtils.isBlank(searchDto.supplier())) {
-			resultList = partsRepository.findAllPartsByName(searchDto.name());
+			resultList = partsRepository.findAllByNameOrderByNameAsc(searchDto.name());
 		} else if (StringUtils.isBlank(searchDto.name())) {
 			resultList = partsRepository.findAllPartsBySupplier(searchDto.supplier());
 		} else {
@@ -41,10 +42,56 @@ public class ItemService {
 		return partsMapper.toPartsDtoList(resultList);
 	}
 
-	public ItemDto createPart(ItemDto partDto) {
+	public ItemDto getItem(Long id) {
+		Item item = findItemById(id);
+		if (item == null) {
+			return null;
+		}
+		return partsMapper.toPartsDto(item);
+	}
+
+	public ItemDto createOrModifyPart(ItemDto partDto) {
+		if (partDto == null) {
+			return null;
+		}
+		if (partDto.id() == null) {
+			return createItem(partDto);
+		} else {
+			return modifyItem(partDto);
+		}
+	}
+
+	public void deletePart(Long itemId) {
+		partsRepository.deleteById(itemId);
+	}
+
+	private Item findItemById(Long itemId) {
+		if (itemId == null) {
+			return null;
+		}
+		Optional<Item> itemOpt = partsRepository.findById(itemId);
+		if (itemOpt.isEmpty()) {
+			throw new IllegalArgumentException("A megadott azoosito nem letezik!");
+		}
+		return itemOpt.get();
+	}
+
+	private ItemDto modifyItem(ItemDto partDto) {
+		Item item = findItemById(partDto.id());
+		if (item == null) {
+			return null;
+		}
+		return partsMapper.toPartsDto(
+			partsRepository.save(
+				partsMapper.updateItem(partDto,item)));
+	}
+
+	private ItemDto createItem(ItemDto partDto) {
+		//create
 		return partsMapper.toPartsDto(
 			partsRepository.save(
 				partsMapper.toParts(partDto)));
-
 	}
+
+
 }
