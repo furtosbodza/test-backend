@@ -37,8 +37,13 @@ public class AuthService {
 		if (userDto == null
 			|| StringUtils.isBlank(userDto.email())
 			|| StringUtils.isBlank(userDto.password())
+			|| StringUtils.isBlank(userDto.name())
 		) {
 			throw new IllegalArgumentException("Hiányos adatok!");
+		}
+		Optional<AppUser> appUserOpt = appUserRepository.findByEmail(userDto.email());
+		if (appUserOpt.isPresent()) {
+			throw new RuntimeException("A megadott e-mail cím már létezik!");
 		}
 		return appUserMapper.toDto(
 			appUserRepository.save(

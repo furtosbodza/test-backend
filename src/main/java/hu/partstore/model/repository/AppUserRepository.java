@@ -12,4 +12,6 @@ public interface AppUserRepository
 
 	Optional<AppUser> findByEmailAndPassword(String email, String password);
 
+	Optional<AppUser> findByEmail(String email);
+
 }
