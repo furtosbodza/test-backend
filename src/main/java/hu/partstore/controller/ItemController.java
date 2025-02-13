@@ -36,7 +36,7 @@ public class ItemController {
 	public ResponseEntity<ItemDto> getItem(@PathVariable("id") String itemId) {
 		return new ResponseEntity<>(itemService.getItem(Long.valueOf(itemId)), HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/item/list")
 	public ResponseEntity<List<ItemDto>> searchParts(@RequestBody ItemSearchDto searchDto) {
 		return new ResponseEntity<>(itemService.searchParts(searchDto), HttpStatus.OK);
